@@ -10,7 +10,7 @@ class Dictionary:
     def __init__(self, file_name: str, filter_sentence: Optional[str] = None):
         self.words_by_group = {}
         max_length = len(filter_sentence) if filter_sentence else 25
-        self.words_by_length = [[] for _ in range(max_length)]
+        self.words_by_length = [[] for _ in range(max_length + 1)]
         self.file_name = file_name
         self.parse(filter_sentence)
 

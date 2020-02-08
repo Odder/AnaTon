@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='AnaTon',
-    version='1.0.0',
+    version='1.0.1',
     license='MIT',
     author='Oscar Roth Andersen',
     author_email='oscarrothandersen@gmail.com',
