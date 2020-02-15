@@ -1,5 +1,5 @@
-from .utils import contains, word_to_number
 from typing import Optional
+from .utils import word_to_number
 
 
 class Dictionary:
@@ -22,15 +22,15 @@ class Dictionary:
         :return:
         """
         if filter_sentence:
-            filter_sentence = word_to_number(filter_sentence)
+            filter_sentence = word_to_number(filter_sentence.lower())
         previous_line = ""
         with open(self.file_name) as f:
-            for line in f:
-                line = line[:-1]
+            lines = f.read().splitlines()
+            lines = zip(lines, map(word_to_number, lines))
+            for line, word in lines:
                 if len(line) < 2 or line == previous_line:
                     continue
-                word = word_to_number(line)
-                if not filter_sentence or contains(filter_sentence, word):
+                if not filter_sentence or not(filter_sentence % word):
                     for char in line:
                         if not (97 <= ord(char) <= 122):
                             break
@@ -40,3 +40,6 @@ class Dictionary:
                             self.words_by_length[len(line)].append(word)
                         self.words_by_group[str(word)].append(line)
                         previous_line = line
+
+        for i in range(len(self.words_by_length)):
+            self.words_by_length[i].sort()

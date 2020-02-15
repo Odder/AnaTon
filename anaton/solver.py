@@ -1,11 +1,13 @@
 from collections import deque
 from itertools import permutations, product
-from typing import List
-from .utils import word_to_number, contains
+from typing import List, Optional
+import os
+import inspect
+from .utils import word_to_number, strip
 from .dictionary import Dictionary
 
 
-def solve(letters: str, dictionary: Dictionary) -> List[str]:
+def solve(letters: str, dictionary: Optional[Dictionary] = None, min_word_length: int = 2) -> List[str]:
     """
     A BFS anagram solver that checks every candidate up against a lookup table of depth 1.
 
@@ -19,29 +21,38 @@ def solve(letters: str, dictionary: Dictionary) -> List[str]:
 
     :param letters:
     :param dictionary:
+    :param min_word_length:
     :return:
     """
+    letters = strip(letters.lower())
     letters_numerical = word_to_number(letters)
+
+    if dictionary is None:
+        default_path = os.path.dirname(__file__) + '/wordlist10000'
+        dictionary = Dictionary(default_path, letters)
+
     queue = deque()
-    queue.append((word_to_number(letters), len(letters), []))
+    queue.append((letters_numerical, len(letters), len(letters), []))
 
     if str(letters_numerical) in dictionary.words_by_group:
-        candidates = cartesian_solutions([letters_numerical], dictionary)
-        yield candidates
+        yield dictionary.words_by_group[str(letters_numerical)]
 
     while queue:
-        letters, length, path = queue.popleft()
-
-        for i in range(length):
-            for word_letters in dictionary.words_by_length[length - i]:
+        letters, length, prev_length, path = queue.popleft()
+        for i in range(min(length - min_word_length, prev_length), min_word_length - 1, -1):
+            for word_letters in dictionary.words_by_length[i]:
                 if path and word_letters > path[-1]:
-                    continue
-                if contains(letters, word_letters):
+                    break
+                if not(letters % word_letters):
                     remaining_letters = letters // word_letters
-                    if str(remaining_letters) in dictionary.words_by_group:
-                        candidates = cartesian_solutions(path + [word_letters] + [remaining_letters], dictionary)
-                        yield candidates
-                    queue.append((letters // word_letters, i, path + [word_letters]))
+                    if (word_letters > remaining_letters and i == length - i) or i > length - i:
+                        if str(remaining_letters) in dictionary.words_by_group:
+                            anagrams = cartesian_solutions(path + [word_letters] + [remaining_letters], dictionary)
+                            yield anagrams
+                        else:
+                            queue.append((letters // word_letters, length - i, i, path + [word_letters]))
+                    else:
+                        queue.append((letters // word_letters, length - i, i, path + [word_letters]))
 
 
 def cartesian_solutions(path: List[int], dictionary: Dictionary) -> List[str]:
