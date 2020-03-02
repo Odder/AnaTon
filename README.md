@@ -1,4 +1,5 @@
-# Anaton - A very fast anagram solver!
+Anaton - A very fast anagram solver!
+===
 This is a very fast anagram solver meant to find either a lot of anagrams from smaller sentences or identify longer 
 anagrams from slightly longer sentences.
 
