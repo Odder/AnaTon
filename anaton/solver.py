@@ -2,7 +2,6 @@ from collections import deque
 from itertools import permutations, product
 from typing import List, Optional
 import os
-import inspect
 from .utils import word_to_number, strip
 from .dictionary import Dictionary
 
@@ -49,10 +48,8 @@ def solve(letters: str, dictionary: Optional[Dictionary] = None, min_word_length
                         if str(remaining_letters) in dictionary.words_by_group:
                             anagrams = cartesian_solutions(path + [word_letters] + [remaining_letters], dictionary)
                             yield anagrams
-                        else:
-                            queue.append((letters // word_letters, length - i, i, path + [word_letters]))
-                    else:
-                        queue.append((letters // word_letters, length - i, i, path + [word_letters]))
+                            continue
+                    queue.append((letters // word_letters, length - i, i, path + [word_letters]))
 
 
 def cartesian_solutions(path: List[int], dictionary: Dictionary) -> List[str]:

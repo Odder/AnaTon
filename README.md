@@ -1,19 +1,20 @@
-# Anaton - A very fast anagram solver!
+Anaton - A very fast anagram solver!
+===
 This is a very fast anagram solver meant to find either a lot of anagrams from smaller sentences or identify longer 
 anagrams from slightly longer sentences.
 
-## Installation
+# Installation
 Pre-requisites: Python 3.7
-```shell script
+```
 pip install anaton
 ```
 
-## Usage
+# Usage
 When finding anagrams we need 2 things, a seed sentence and a word list to match up against. This package does come 
 pre-shipped with a dictionary of 10,000 words, but you can use your own wordlist if you want to. Please note this 
 library only supports english characters a-z
 
-### Solve
+## Solve
 It's pretty easy to get going!
 
 ```python
@@ -41,12 +42,12 @@ for chunk in solve('string to find anagrams from', min_word_length=3):
         print(anagram)
 ```
 
-### Dictionary
+## Dictionary
 If you want to use a custom wordlist, you will need to instantiate your own dictionary object. The Dictionary is 
 expecting your wordlist to already be sorted for performance reasons. If this is not the case, you can easily sort it 
 on unix systems with this
 
-```shell script
+```
 sort wordlist.txt > wordlist.txt
 ```
 
@@ -75,3 +76,35 @@ from anaton import Dictionary, solve
 dictionary = Dictionary('path-to-file')
 anagram_generator = solve('string to search within', dictionary=dictionary)
 ```
+
+
+# Example usage
+A simple test of speed
+
+```python
+from anaton import solve
+import time
+
+
+if __name__ == '__main__':
+    anagram = 'Anaton analyses speedy'
+    print(f'original sentence: "{anagram}"')
+    k = 0
+    target = 4000000
+
+    solve_generator = solve(anagram, min_word_length=2)
+    start = time.time()
+    for anagrams in solve_generator:
+        k += len(anagrams)
+        if k >= target:
+            break
+
+    timing = time.time() - start
+    print(f'{k} anagrams found in {timing:.3f}s @ {k / timing / 1000:.0f} anagrams/ms.')
+    print(f'last anagram was: {anagrams[0]}')
+
+```
+
+Which would generate an output likes this:
+
+![Sample output](examples/speed.png)
